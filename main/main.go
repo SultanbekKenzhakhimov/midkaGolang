@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"net/http"
-
+	_ "github.com/golang-migrate/migrate/database/postgres"
+	_ "github.com/golang-migrate/migrate/source/file"
 	"github.com/gorilla/mux"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"log"
 	"midkaGolang/handlers"
+	"net/http"
 )
 
 func main() {
