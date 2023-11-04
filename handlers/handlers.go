@@ -8,6 +8,7 @@ import (
 	"midkaGolang/models"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 var db *gorm.DB
@@ -20,6 +21,8 @@ func InitDB(database *gorm.DB) {
 func GetAllPowerTools(w http.ResponseWriter, r *http.Request) {
 	var powerTools []models.PowerTool
 	db.Find(&powerTools)
+	//добавляю таймаут задержку
+	time.Sleep(5 * time.Second)
 	fmt.Println("Endpoint Hit: GetAllPowerTools")
 	json.NewEncoder(w).Encode(powerTools)
 }
@@ -37,6 +40,8 @@ func GetPowerToolById(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Power Tool not found", http.StatusNotFound)
 		return
 	}
+	//добавляю таймаут задержку
+	time.Sleep(5 * time.Second)
 
 	json.NewEncoder(w).Encode(powerTool)
 }
@@ -45,6 +50,8 @@ func CreatePowerTool(w http.ResponseWriter, r *http.Request) {
 	var powerTool models.PowerTool
 	json.NewDecoder(r.Body).Decode(&powerTool)
 	db.Create(&powerTool)
+	//добавляю таймаут задержку
+	time.Sleep(5 * time.Second)
 	fmt.Println("Endpoint Hit: CreatePowerTool")
 	json.NewEncoder(w).Encode(powerTool)
 }
@@ -53,6 +60,8 @@ func UpdatePowerTool(w http.ResponseWriter, r *http.Request) {
 	var updatedPowerTool models.PowerTool
 	json.NewDecoder(r.Body).Decode(&updatedPowerTool)
 	db.Save(&updatedPowerTool)
+	//добавляю таймаут задержку
+	time.Sleep(5 * time.Second)
 	json.NewEncoder(w).Encode(updatedPowerTool)
 }
 
@@ -73,6 +82,8 @@ func UpdatePowerToolPatch(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, result.Error.Error(), http.StatusNotFound)
 		return
 	}
+	//добавляю таймаут задержку
+	time.Sleep(5 * time.Second)
 
 	db.Model(&existingData).Updates(newData)
 
@@ -95,12 +106,16 @@ func DeletePowerTool(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db.Delete(&powerTool)
+	//добавляю таймаут задержку
+	time.Sleep(5 * time.Second)
 	w.WriteHeader(http.StatusNoContent)
 }
 
 func GetAllPaints(w http.ResponseWriter, r *http.Request) {
 	var paints []models.Paint
 	db.Find(&paints)
+	//добавляю таймаут задержку
+	time.Sleep(5 * time.Second)
 	fmt.Println("Endpoint Hit: GetAllPaints")
 	json.NewEncoder(w).Encode(paints)
 }
@@ -109,6 +124,8 @@ func CreatePaint(w http.ResponseWriter, r *http.Request) {
 	var paint models.Paint
 	json.NewDecoder(r.Body).Decode(&paint)
 	db.Create(&paint)
+	//добавляю таймаут задержку
+	time.Sleep(5 * time.Second)
 	fmt.Println("Endpoint Hit: CreatePaint")
 	json.NewEncoder(w).Encode(paint)
 }
@@ -125,6 +142,8 @@ func GetPaintById(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Paint not found", http.StatusNotFound)
 		return
 	}
+	//добавляю таймаут задержку
+	time.Sleep(5 * time.Second)
 
 	json.NewEncoder(w).Encode(paint)
 }
@@ -134,6 +153,8 @@ func UpdatePaint(w http.ResponseWriter, r *http.Request) {
 	var updatedPaint models.Paint
 	json.NewDecoder(r.Body).Decode(&updatedPaint)
 	db.Save(&updatedPaint)
+	//добавляю таймаут задержку
+	time.Sleep(5 * time.Second)
 	json.NewEncoder(w).Encode(updatedPaint)
 }
 
@@ -153,6 +174,8 @@ func DeletePaint(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db.Delete(&paint)
+	//добавляю таймаут задержку
+	time.Sleep(5 * time.Second)
 	w.WriteHeader(http.StatusNoContent)
 }
 func UpdatePaintPatch(w http.ResponseWriter, r *http.Request) {
@@ -174,6 +197,8 @@ func UpdatePaintPatch(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db.Model(&existingData).Updates(newData)
+	//добавляю таймаут задержку
+	time.Sleep(5 * time.Second)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(existingData)
@@ -182,6 +207,8 @@ func UpdatePaintPatch(w http.ResponseWriter, r *http.Request) {
 func GetAllNailScrews(w http.ResponseWriter, r *http.Request) {
 	var nailScrews []models.NailScrew
 	db.Find(&nailScrews)
+	//добавляю таймаут задержку
+	time.Sleep(5 * time.Second)
 	fmt.Println("Endpoint Hit: GetAllNailScrews")
 	json.NewEncoder(w).Encode(nailScrews)
 }
@@ -190,6 +217,8 @@ func CreateNailScrew(w http.ResponseWriter, r *http.Request) {
 	var nailScrew models.NailScrew
 	json.NewDecoder(r.Body).Decode(&nailScrew)
 	db.Create(&nailScrew)
+	//добавляю таймаут задержку
+	time.Sleep(5 * time.Second)
 	fmt.Println("Endpoint Hit: CreateNailScrew")
 	json.NewEncoder(w).Encode(nailScrew)
 }
@@ -208,6 +237,8 @@ func GetNailScrewById(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Nail Screw not found", http.StatusNotFound)
 		return
 	}
+	//добавляю таймаут задержку
+	time.Sleep(5 * time.Second)
 
 	json.NewEncoder(w).Encode(nailScrew)
 }
@@ -217,6 +248,8 @@ func UpdateNailScrew(w http.ResponseWriter, r *http.Request) {
 	var updatedNailScrew models.NailScrew
 	json.NewDecoder(r.Body).Decode(&updatedNailScrew)
 	db.Save(&updatedNailScrew)
+	//добавляю таймаут задержку
+	time.Sleep(5 * time.Second)
 	json.NewEncoder(w).Encode(updatedNailScrew)
 }
 
@@ -236,12 +269,16 @@ func DeleteNailScrew(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db.Delete(&nailScrew)
+	//добавляю таймаут задержку
+	time.Sleep(5 * time.Second)
 	w.WriteHeader(http.StatusNoContent)
 }
 
 func GetAllPlumbingSupplies(w http.ResponseWriter, r *http.Request) {
 	var plumbingSupplies []models.PlumbingSupply
 	db.Find(&plumbingSupplies)
+	//добавляю таймаут задержку
+	time.Sleep(5 * time.Second)
 	fmt.Println("Endpoint Hit: GetAllPlumbingSupplies")
 	json.NewEncoder(w).Encode(plumbingSupplies)
 }
@@ -250,6 +287,8 @@ func CreatePlumbingSupply(w http.ResponseWriter, r *http.Request) {
 	var plumbingSupply models.PlumbingSupply
 	json.NewDecoder(r.Body).Decode(&plumbingSupply)
 	db.Create(&plumbingSupply)
+	//добавляю таймаут задержку
+	time.Sleep(5 * time.Second)
 	fmt.Println("Endpoint Hit: CreatePlumbingSupply")
 	json.NewEncoder(w).Encode(plumbingSupply)
 }
@@ -268,6 +307,8 @@ func GetPlumbingSupplyById(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Plumbing Supply not found", http.StatusNotFound)
 		return
 	}
+	//добавляю таймаут задержку
+	time.Sleep(5 * time.Second)
 
 	json.NewEncoder(w).Encode(plumbingSupply)
 }
@@ -277,6 +318,8 @@ func UpdatePlumbingSupply(w http.ResponseWriter, r *http.Request) {
 	var updatedPlumbingSupply models.PlumbingSupply
 	json.NewDecoder(r.Body).Decode(&updatedPlumbingSupply)
 	db.Save(&updatedPlumbingSupply)
+	//добавляю таймаут задержку
+	time.Sleep(5 * time.Second)
 	json.NewEncoder(w).Encode(updatedPlumbingSupply)
 }
 
@@ -296,11 +339,15 @@ func DeletePlumbingSupply(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db.Delete(&plumbingSupply)
+	//добавляю таймаут задержку
+	time.Sleep(5 * time.Second)
 	w.WriteHeader(http.StatusNoContent)
 }
 func GetAllElectricalFixtures(w http.ResponseWriter, r *http.Request) {
 	var electricalFixtures []models.ElectricalFixture
 	db.Find(&electricalFixtures)
+	//добавляю таймаут задержку
+	time.Sleep(5 * time.Second)
 	fmt.Println("Endpoint Hit: GetAllElectricalFixtures")
 	json.NewEncoder(w).Encode(electricalFixtures)
 }
@@ -309,6 +356,8 @@ func CreateElectricalFixture(w http.ResponseWriter, r *http.Request) {
 	var electricalFixture models.ElectricalFixture
 	json.NewDecoder(r.Body).Decode(&electricalFixture)
 	db.Create(&electricalFixture)
+	//добавляю таймаут задержку
+	time.Sleep(5 * time.Second)
 	fmt.Println("Endpoint Hit: CreateElectricalFixture")
 	json.NewEncoder(w).Encode(electricalFixture)
 }
@@ -325,6 +374,8 @@ func GetElectricalFixtureById(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Electrical Fixture not found", http.StatusNotFound)
 		return
 	}
+	//добавляю таймаут задержку
+	time.Sleep(5 * time.Second)
 
 	json.NewEncoder(w).Encode(electricalFixture)
 }
@@ -333,6 +384,8 @@ func UpdateElectricalFixture(w http.ResponseWriter, r *http.Request) {
 	var updatedElectricalFixture models.ElectricalFixture
 	json.NewDecoder(r.Body).Decode(&updatedElectricalFixture)
 	db.Save(&updatedElectricalFixture)
+	//добавляю таймаут задержку
+	time.Sleep(5 * time.Second)
 	json.NewEncoder(w).Encode(updatedElectricalFixture)
 }
 
@@ -351,5 +404,7 @@ func DeleteElectricalFixture(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db.Delete(&electricalFixture)
+	//добавляю таймаут задержку
+	time.Sleep(5 * time.Second)
 	w.WriteHeader(http.StatusNoContent)
 }
