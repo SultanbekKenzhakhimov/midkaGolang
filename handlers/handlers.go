@@ -15,8 +15,22 @@ var db *gorm.DB
 
 func InitDB(database *gorm.DB) {
 	db = database
-	db.AutoMigrate(&models.PowerTool{}, &models.Paint{}, &models.NailScrew{}, &models.PlumbingSupply{}, &models.ElectricalFixture{})
+	db.AutoMigrate(&models.PowerTool{}, &models.Paint{}, &models.NailScrew{}, &models.PlumbingSupply{}, &models.ElectricalFixture{}, models.User{})
 }
+
+//SIGN UP user
+
+func CreateUser(w http.ResponseWriter, r *http.Request) {
+	var user models.User
+	json.NewDecoder(r.Body).Decode(&user)
+	db.Create(&user)
+	//добавляю таймаут задержку
+	time.Sleep(5 * time.Second)
+	fmt.Println("Endpoint Hit: CreatePowerTool")
+	json.NewEncoder(w).Encode(user)
+}
+
+//CRUD для сущностей
 
 func GetAllPowerTools(w http.ResponseWriter, r *http.Request) {
 	var powerTools []models.PowerTool
