@@ -18,7 +18,7 @@ func InitDB(database *gorm.DB) {
 	db.AutoMigrate(&models.PowerTool{}, &models.Paint{}, &models.NailScrew{}, &models.PlumbingSupply{}, &models.ElectricalFixture{}, models.User{})
 }
 
-//SIGN UP userr
+//SIGN UP user
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	var user models.User
