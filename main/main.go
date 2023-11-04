@@ -28,6 +28,7 @@ func main() {
 	router.HandleFunc("/powerTools", handlers.CreatePowerTool).Methods("POST")
 	router.HandleFunc("/powerTools/{id}", handlers.UpdatePowerTool).Methods("PUT")
 	router.HandleFunc("/powerTools/{id}", handlers.DeletePowerTool).Methods("DELETE")
+	router.HandleFunc("/powerTools/{id}", handlers.UpdatePowerToolPatch).Methods("PATCH")
 
 	// Роуты для Paints
 	router.HandleFunc("/paints", handlers.GetAllPaints).Methods("GET")

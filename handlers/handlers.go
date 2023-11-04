@@ -56,6 +56,30 @@ func UpdatePowerTool(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(updatedPowerTool)
 }
 
+func UpdatePowerToolPatch(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	var newData models.PowerTool
+	err := json.NewDecoder(r.Body).Decode(&newData)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var existingData models.PowerTool
+	result := db.First(&existingData, id)
+	if result.Error != nil {
+		http.Error(w, result.Error.Error(), http.StatusNotFound)
+		return
+	}
+
+	db.Model(&existingData).Updates(newData)
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(existingData)
+}
+
 func DeletePowerTool(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	powerToolID, err := strconv.Atoi(params["id"])
