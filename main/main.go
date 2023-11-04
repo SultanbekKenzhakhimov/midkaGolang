@@ -36,6 +36,7 @@ func main() {
 	router.HandleFunc("/paints", handlers.CreatePaint).Methods("POST")
 	router.HandleFunc("/paints/{id}", handlers.UpdatePaint).Methods("PUT")
 	router.HandleFunc("/paints/{id}", handlers.DeletePaint).Methods("DELETE")
+	router.HandleFunc("/paints/{id}", handlers.UpdatePaintPatch).Methods("PATCH")
 	// Nail Screws
 	router.HandleFunc("/nailScrews", handlers.GetAllNailScrews).Methods("GET")
 	router.HandleFunc("/nailScrews/{id}", handlers.GetNailScrewById).Methods("GET")
