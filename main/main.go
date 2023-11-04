@@ -22,6 +22,8 @@ func main() {
 	handlers.InitDB(db)
 
 	router := mux.NewRouter()
+	// Роут для Sign Up User
+	router.HandleFunc("/sign-up", handlers.CreateUser).Methods("POST")
 	// Роуты для Power Tools
 	router.HandleFunc("/powerTools", handlers.GetAllPowerTools).Methods("GET")
 	router.HandleFunc("/powerTools/{id}", handlers.GetPowerToolById).Methods("GET")
