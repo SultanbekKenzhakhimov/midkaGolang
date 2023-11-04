@@ -26,7 +26,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	db.Create(&user)
 	//добавляю таймаут задержку
 	time.Sleep(5 * time.Second)
-	fmt.Println("Endpoint Hit: CreatePowerTool")
+	fmt.Println("Endpoint Hit: CreateUser")
 	json.NewEncoder(w).Encode(user)
 }
 
