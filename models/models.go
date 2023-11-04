@@ -34,3 +34,8 @@ type ElectricalFixture struct {
 	Type    string
 	Wattage int
 }
+type User struct {
+	gorm.Model
+	Email    string
+	Password string
+}
