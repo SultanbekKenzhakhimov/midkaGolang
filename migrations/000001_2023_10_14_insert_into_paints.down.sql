@@ -1,0 +1,1 @@
+DELETE FROM paints WHERE color = 'Blue' AND type = 'Neon';
