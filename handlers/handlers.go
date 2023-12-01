@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"gorm.io/gorm"
+	"midkaGolang/mailer"
 	"midkaGolang/models"
 	"net/http"
 	"strconv"
@@ -24,8 +25,13 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	json.NewDecoder(r.Body).Decode(&user)
 	db.Create(&user)
-	//добавляю таймаут задержку
+
+	// Добавляйте таймаут задержки до отправки письма (если это необходимо)
 	time.Sleep(5 * time.Second)
+
+	// После создания пользователя вызывайте функцию handleSuccessfulRegistration
+	mailer.HandleSuccessfulRegistration(user)
+
 	fmt.Println("Endpoint Hit: CreateUser")
 	json.NewEncoder(w).Encode(user)
 }
