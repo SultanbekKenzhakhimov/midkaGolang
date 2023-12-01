@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 	"gorm.io/gorm"
 	"midkaGolang/mailer"
@@ -427,4 +428,89 @@ func DeleteElectricalFixture(w http.ResponseWriter, r *http.Request) {
 	//добавляю таймаут задержку
 	time.Sleep(5 * time.Second)
 	w.WriteHeader(http.StatusNoContent)
+}
+
+// Login обрабатывает запрос на вход и выдает JWT токен при успешной аутентификации
+func Login(w http.ResponseWriter, r *http.Request) {
+	var user models.User
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	var existingUser models.User
+	result := db.Where("email = ? AND password = ?", user.Email, user.Password).First(&existingUser)
+	if result.Error != nil {
+		http.Error(w, "Invalid username or password", http.StatusUnauthorized)
+		return
+	}
+
+	// Создаем токен
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"username": existingUser.Email,
+		"exp":      time.Now().Add(time.Hour * 24).Unix(), // Устанавливаем срок действия токена
+	})
+
+	// Подписываем токен с использованием секретного ключа
+	tokenString, err := token.SignedString([]byte("your-secret-key"))
+	if err != nil {
+		http.Error(w, "Error generating token", http.StatusInternalServerError)
+		return
+	}
+
+	// Отправляем токен в ответе
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"token": tokenString})
+}
+
+// ProtectedEndpoint является защищенным маршрутом, который требует валидного токена для доступа
+func ProtectedEndpoint(w http.ResponseWriter, r *http.Request) {
+	// Получаем токен из заголовка Authorization
+	tokenString := r.Header.Get("Authorization")
+	if tokenString == "" {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	// Проверяем валидность токена
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		// Возвращаем секретный ключ для проверки подписи токена
+		return []byte("your-secret-key"), nil
+	})
+	if err != nil || !token.Valid {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	// Если токен валиден, продолжаем выполнение защищенного кода
+	// ...
+
+	// Пример ответа
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(`{"message": "This is a protected endpoint"}`))
+}
+
+func AuthMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Получаем токен из заголовка Authorization
+		tokenString := r.Header.Get("Authorization")
+		if tokenString == "" {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		// Проверяем валидность токена
+		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+			// Возвращаем секретный ключ для проверки подписи токена
+			return []byte("your-secret-key"), nil
+		})
+		if err != nil || !token.Valid {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		// Если токен валиден, передаем управление следующему обработчику
+		next.ServeHTTP(w, r)
+	})
 }

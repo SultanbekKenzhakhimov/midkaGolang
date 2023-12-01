@@ -25,12 +25,12 @@ func main() {
 	// Роут для Sign Up User
 	router.HandleFunc("/sign-up", handlers.CreateUser).Methods("POST")
 	// Роуты для Power Tools
-	router.HandleFunc("/powerTools", handlers.GetAllPowerTools).Methods("GET")
-	router.HandleFunc("/powerTools/{id}", handlers.GetPowerToolById).Methods("GET")
-	router.HandleFunc("/powerTools", handlers.CreatePowerTool).Methods("POST")
-	router.HandleFunc("/powerTools/{id}", handlers.UpdatePowerTool).Methods("PUT")
-	router.HandleFunc("/powerTools/{id}", handlers.DeletePowerTool).Methods("DELETE")
-	router.HandleFunc("/powerTools/{id}", handlers.UpdatePowerToolPatch).Methods("PATCH")
+	router.Handle("/powerTools", handlers.AuthMiddleware(http.HandlerFunc(handlers.GetAllPowerTools))).Methods("GET")
+	router.Handle("/powerTools/{id}", handlers.AuthMiddleware(http.HandlerFunc(handlers.GetPowerToolById))).Methods("GET")
+	router.Handle("/powerTools", handlers.AuthMiddleware(http.HandlerFunc(handlers.CreatePowerTool))).Methods("POST")
+	router.Handle("/powerTools/{id}", handlers.AuthMiddleware(http.HandlerFunc(handlers.UpdatePowerTool))).Methods("PUT")
+	router.Handle("/powerTools/{id}", handlers.AuthMiddleware(http.HandlerFunc(handlers.DeletePowerTool))).Methods("DELETE")
+	router.Handle("/powerTools/{id}", handlers.AuthMiddleware(http.HandlerFunc(handlers.UpdatePowerToolPatch))).Methods("PATCH")
 
 	// Роуты для Paints
 	router.HandleFunc("/paints", handlers.GetAllPaints).Methods("GET")
@@ -59,6 +59,12 @@ func main() {
 	router.HandleFunc("/electricalFixtures", handlers.CreateElectricalFixture).Methods("POST")
 	router.HandleFunc("/electricalFixtures/{id}", handlers.UpdateElectricalFixture).Methods("PUT")
 	router.HandleFunc("/electricalFixtures/{id}", handlers.DeleteElectricalFixture).Methods("DELETE")
+
+	// Роут для входа пользователя
+	router.HandleFunc("/login", handlers.Login).Methods("POST")
+
+	// Защищенный роут, требующий валидного JWT токена
+	router.Handle("/protected", handlers.AuthMiddleware(http.HandlerFunc(handlers.ProtectedEndpoint))).Methods("GET")
 	// Start the server
 	fmt.Println("Server is running on :8080")
 	log.Fatal(http.ListenAndServe(":8080", router))
