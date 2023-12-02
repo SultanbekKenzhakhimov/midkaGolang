@@ -25,9 +25,10 @@ func InitDB(database *gorm.DB) {
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	json.NewDecoder(r.Body).Decode(&user)
+	user.Role = "user" // set default role
 	db.Create(&user)
 
-	// Добавляйте таймаут задержки до отправки письма (если это необходимо)
+	//добавлю таймаут задержку
 	time.Sleep(5 * time.Second)
 
 	// После создания пользователя вызывайте функцию handleSuccessfulRegistration
@@ -446,10 +447,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Создаем токен
+	// Создаем токен с добавлением роли пользователя
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": existingUser.Email,
-		"exp":      time.Now().Add(time.Hour * 24).Unix(), // Устанавливаем срок действия токена
+		"role":     existingUser.Role, // Добавляем роль пользователя в токен
+		"exp":      time.Now().Add(time.Hour * 24).Unix(),
 	})
 
 	// Подписываем токен с использованием секретного ключа
@@ -484,7 +486,6 @@ func ProtectedEndpoint(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Если токен валиден, продолжаем выполнение защищенного кода
-	// ...
 
 	// Пример ответа
 	w.Header().Set("Content-Type", "application/json")
@@ -510,7 +511,56 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		// Если токен валиден, передаем управление следующему обработчику
-		next.ServeHTTP(w, r)
+		// Получаем информацию о ролях из токена
+		claims, ok := token.Claims.(jwt.MapClaims)
+		if !ok {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		// Проверяем роли
+		role, ok := claims["role"].(string)
+		if !ok {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		// Получаем информацию о маршруте (эндпоинте) с использованием mux.Vars
+		vars := mux.Vars(r)
+		route := r.URL.Path
+
+		// Проверяем разрешения на основе роли и маршрута
+		switch role {
+		case "admin":
+			// Администратор имеет доступ ко всем эндпоинтам
+			next.ServeHTTP(w, r)
+		case "user":
+			// Пользователь имеет доступ к определенным эндпоинтам
+			switch route {
+			case "/powerTools", "/powerTools/{id}":
+				// Разрешения для эндпоинтов powerTools
+				if vars["id"] != "" {
+					// Действия для конкретного powerTool с заданным ID
+					next.ServeHTTP(w, r)
+				} else {
+					// Действия для списка powerTools
+					next.ServeHTTP(w, r)
+				}
+			case "/paints", "/paints/{id}":
+				// Разрешения для эндпоинтов paints
+				if vars["id"] != "" {
+					// Действия для конкретного paint с заданным ID
+					next.ServeHTTP(w, r)
+				} else {
+					// Действия для списка paints
+					next.ServeHTTP(w, r)
+				}
+			// Добавьте другие эндпоинты по аналогии
+			default:
+				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			}
+		default:
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		}
 	})
 }

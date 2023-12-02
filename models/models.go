@@ -38,4 +38,5 @@ type User struct {
 	gorm.Model
 	Email    string
 	Password string
+	Role     string // "admin" or "user"
 }
