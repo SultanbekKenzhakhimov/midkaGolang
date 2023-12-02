@@ -2,9 +2,8 @@ package main
 
 import (
 	"fmt"
-	_ "github.com/golang-migrate/migrate/database/postgres"
-	_ "github.com/golang-migrate/migrate/source/file"
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"log"
@@ -13,6 +12,7 @@ import (
 )
 
 func main() {
+	// Инициализация базы данных
 	dsn := "user=postgres password=postgres dbname=midkaDB port=5432 sslmode=disable TimeZone=Asia/Shanghai"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
@@ -21,9 +21,12 @@ func main() {
 
 	handlers.InitDB(db)
 
+	// Инициализация маршрутизатора
 	router := mux.NewRouter()
+
 	// Роут для Sign Up User
 	router.HandleFunc("/sign-up", handlers.CreateUser).Methods("POST")
+
 	// Роуты для Power Tools
 	router.Handle("/powerTools", handlers.AuthMiddleware(http.HandlerFunc(handlers.GetAllPowerTools))).Methods("GET")
 	router.Handle("/powerTools/{id}", handlers.AuthMiddleware(http.HandlerFunc(handlers.GetPowerToolById))).Methods("GET")
@@ -39,6 +42,7 @@ func main() {
 	router.HandleFunc("/paints/{id}", handlers.UpdatePaint).Methods("PUT")
 	router.HandleFunc("/paints/{id}", handlers.DeletePaint).Methods("DELETE")
 	router.HandleFunc("/paints/{id}", handlers.UpdatePaintPatch).Methods("PATCH")
+
 	// Nail Screws
 	router.HandleFunc("/nailScrews", handlers.GetAllNailScrews).Methods("GET")
 	router.HandleFunc("/nailScrews/{id}", handlers.GetNailScrewById).Methods("GET")
@@ -65,7 +69,20 @@ func main() {
 
 	// Защищенный роут, требующий валидного JWT токена
 	router.Handle("/protected", handlers.AuthMiddleware(http.HandlerFunc(handlers.ProtectedEndpoint))).Methods("GET")
-	// Start the server
+
+	// Создаем middleware CORS с настройками
+	corsOptions := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:3000", "https://example.com"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
+		AllowedHeaders:   []string{"Content-Type", "Authorization"},
+		AllowCredentials: true,
+		MaxAge:           3600,
+	})
+
+	// Используем middleware CORS для всех обработчиков
+	handler := corsOptions.Handler(router)
+
+	// Запускаем сервер
 	fmt.Println("Server is running on :8080")
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Fatal(http.ListenAndServe(":8080", handler))
 }

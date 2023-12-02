@@ -6,6 +6,7 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/golang-migrate/migrate v3.5.4+incompatible
 	github.com/gorilla/mux v1.8.0
+	github.com/rs/cors v1.10.1
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 	gorm.io/driver/postgres v1.5.3
 	gorm.io/gorm v1.25.5
